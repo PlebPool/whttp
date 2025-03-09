@@ -73,6 +73,7 @@ build CMakeFiles/untitled33.dir/src/whttp.c.o: C_COMPILER__untitled33_unscanned_
 
 build untitled33: C_EXECUTABLE_LINKER__untitled33_Debug CMakeFiles/untitled33.dir/main.c.o CMakeFiles/untitled33.dir/src/whttp.c.o
   FLAGS = -g
+  LINK_LIBRARIES = -lcjson
   OBJECT_DIR = CMakeFiles/untitled33.dir
   POST_BUILD = :
   PRE_LINK = :

@@ -4,14 +4,10 @@
 
 #include "whttp.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-/*http_status_line_t* http_status_line_new(const char* req);
-http_header_t* http_header_new(const char* req);
-int http_headers_add(http_headers_t* headers, http_header_t* header);*/
-
 
 http_status_line_t* http_status_line_new(const char* req) {
     const size_t pos = strcspn(req, "\r\n");
@@ -47,6 +43,14 @@ http_status_line_t* http_status_line_new(const char* req) {
     return status_line;
 }
 
+void http_status_line_free(http_status_line_t* status_line) {
+    status_line->method = NULL;
+    status_line->uri = NULL;
+    status_line->version = NULL;
+    free(status_line);
+}
+
+
 http_headers_t* http_headers_new(const char* req) {
     http_headers_t* headers = calloc(0, sizeof(http_headers_t));
 
@@ -68,6 +72,7 @@ http_headers_t* http_headers_new(const char* req) {
         char* nlc = strdup(nl);
 
         header->header = strtok_r(nlc, ":", &inner_ptr);
+
         header->value = strtok_r(NULL, ":", &inner_ptr);
 
         http_headers_add(headers, header);
@@ -76,6 +81,15 @@ http_headers_t* http_headers_new(const char* req) {
     }
     free(our_copy);
     return headers;
+}
+
+void http_headers_free(http_headers_t* header) {
+    for (int i = 0; i < header->len; i++) {
+        free(&header->headers[i]);
+        header->capacity = 0;
+        header->len = 0;
+    }
+    free(header);
 }
 
 int http_headers_add(http_headers_t* headers, http_header_t* header) {
@@ -99,4 +113,28 @@ int http_headers_add(http_headers_t* headers, http_header_t* header) {
     headers->headers[headers->len++] = *header;
 
     return 0;
+}
+
+http_body_t * http_body_new(const char *req) {
+    char* our_copy = strdup(req);
+
+    const size_t body_start = strstr(our_copy, "\r\n\r\n") - our_copy;
+
+    char* body_ptr = our_copy + body_start + 4;
+
+    http_body_t* body = malloc(sizeof(http_body_t));
+
+    body->body = body_ptr;
+    body->body_len = strlen(body_ptr);
+
+    return body;
+}
+
+char* get_header(const http_headers_t* headers, const char* key) {
+    for (int i = 0; i < headers->len; i++) {
+        if (strcasecmp(headers->headers[i].header, key) == 0) {
+            return strdup(headers->headers[i].value);
+        }
+    }
+    return NULL;
 }
