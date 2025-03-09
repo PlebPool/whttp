@@ -21,11 +21,11 @@ int main(void) {
 
     http_headers_t* headers = http_headers_new(req);
 
-    http_body_t* body = http_body_new(req);
+    const http_body_t* body = http_body_new(req);
 
-    cJSON *json = cJSON_Parse(body->body);
-    cJSON *key1 = cJSON_GetObjectItem(json, "key1");
-    cJSON *key2 = cJSON_GetObjectItem(json, "key2");
+    const cJSON *json = cJSON_Parse(body->body);
+    const cJSON *key1 = cJSON_GetObjectItem(json, "key1");
+    const cJSON *key2 = cJSON_GetObjectItem(json, "key2");
 
     printf("Value1: %s\n", key1->valuestring);
     printf("Value: %d\n", key2->valueint);
