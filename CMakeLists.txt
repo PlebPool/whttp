@@ -5,6 +5,8 @@ set(CMAKE_C_STANDARD 99)
 
 include_directories("./src")
 
-add_executable(untitled33 main.c src/whttp.c)
+add_library(whttp STATIC src/whttp.c)
 
-target_link_libraries(untitled33 PRIVATE cjson)
+add_executable(untitled33 main.c)
+
+target_link_libraries(untitled33 PRIVATE whttp cjson)
